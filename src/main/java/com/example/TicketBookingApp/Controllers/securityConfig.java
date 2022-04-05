@@ -31,7 +31,7 @@ public class securityConfig extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable().authorizeRequests()
-		.antMatchers("/authenticate","/register").permitAll().anyRequest().authenticated()
+		.antMatchers("/register").permitAll().antMatchers("/authenticate").permitAll().anyRequest().authenticated()
 		.and().exceptionHandling().and().sessionManagement()
 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -42,7 +42,6 @@ httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.cla
 		return NoOpPasswordEncoder.getInstance();
 	}
 	
-	@Override
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception{
 		return super.authenticationManager();

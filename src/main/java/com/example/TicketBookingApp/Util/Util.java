@@ -3,6 +3,10 @@ package com.example.TicketBookingApp.Util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +17,11 @@ import java.util.function.Function;
 
 @Service
 public class Util {
-
-    private String SECRET_KEY = "kjjdiu";
+	
+//@Value("{jwt.ACCESS_TOKEN_SECRET_KEY}")
+//private String ACCESS_TOKEN_SECRET_KEY;
     
+	private String ACCESS_TOKEN_SECRET_KEY="test";
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -29,7 +35,7 @@ public class Util {
         return claimsResolver.apply(claims);
     }
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(ACCESS_TOKEN_SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
     public Boolean isTokenExpired(String token) {
@@ -45,7 +51,7 @@ public class Util {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 *60 ))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+                .signWith(SignatureAlgorithm.HS256,ACCESS_TOKEN_SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {

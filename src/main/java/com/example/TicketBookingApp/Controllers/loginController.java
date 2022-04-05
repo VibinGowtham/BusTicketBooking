@@ -46,15 +46,23 @@ public class loginController {
 	
 	@Autowired
 	private MyUserDetailsService myUserDetailsService;
-
+	
+	
 	@PostMapping("/authenticate")
 	@ResponseBody
-	public ResponseEntity<?> createAuthenticate( String userName,String password) throws Exception
+	public ResponseEntity<?> createJwtToken(String userName,String password) throws Exception
 	{
+		//return ResponseEntity.ok(userName+" "+password);
+		//if(userName==null || password==null) return (ResponseEntity<?>) ResponseEntity.noContent();
+		System.out.print(userName+" : "+password);
 		try {
+			System.out.print("Before ");
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName,password));
+			System.out.print("Inside try");
 		}
-		catch(AuthenticationException e) {throw new Exception("Incorrect Username and Passowrd",e);}
+		catch(AuthenticationException e) {
+			System.out.println("Inside catch");
+			throw new Exception("Incorrect Username and Passowrd",e);}
 
 			UserDetails userdetails= myUserDetailsService.loadUserByUsername(userName);
 			String jwt=util.generateToken(userdetails);

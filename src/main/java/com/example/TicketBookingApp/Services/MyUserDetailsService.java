@@ -11,6 +11,8 @@ import com.example.TicketBookingApp.Model.MyUser;
 import com.example.TicketBookingApp.UserRepository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
@@ -18,7 +20,11 @@ public class MyUserDetailsService implements UserDetailsService {
  UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-    	MyUser user=userRepository.findByName(name);
-        return new User(user.getName(),user.getPassword(),new ArrayList<>());
+    	List<MyUser> user=userRepository.findByName(name);
+    	Iterator<MyUser> it=user.iterator();
+    	MyUser obj = it.next();
+    	System.out.println("From database name:"+obj.getName());
+    	System.out.println("From database password:"+obj.getPassword());
+        return new User(obj.getName(),obj.getPassword(),new ArrayList<>());
     }
 }
