@@ -1,5 +1,4 @@
 package com.example.TicketBookingApp.Util;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,10 +17,12 @@ import java.util.function.Function;
 @Service
 public class Util {
 	
-//@Value("{jwt.ACCESS_TOKEN_SECRET_KEY}")
-//private String ACCESS_TOKEN_SECRET_KEY;
+@Value("${ACCESS_TOKEN_SECRET_KEY}")
+private String ACCESS_TOKEN_SECRET_KEY;
+
+@Value("${REFRESH_TOKEN_SECRET_KEY}")
+private String REFRESH_TOKEN_SECRET_KEY;
     
-	private String ACCESS_TOKEN_SECRET_KEY="test";
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -34,7 +35,7 @@ public class Util {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(ACCESS_TOKEN_SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
@@ -46,12 +47,20 @@ public class Util {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
     }
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        return createRefreshToken(claims, userDetails.getUsername());
+    }
 
     private String createToken(Map<String, Object> claims, String subject) {
-
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 *60 ))
                 .signWith(SignatureAlgorithm.HS256,ACCESS_TOKEN_SECRET_KEY).compact();
+    }
+    private String createRefreshToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 *60*5 ))
+                .signWith(SignatureAlgorithm.HS256,REFRESH_TOKEN_SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {

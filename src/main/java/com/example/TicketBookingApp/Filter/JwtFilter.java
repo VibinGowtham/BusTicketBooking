@@ -32,9 +32,16 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         final String authorizationHeader = request.getHeader("Authorization");
-
+        final String refreshHeader = request.getHeader("Refresh");
+        
         String username = null;
         String jwt = null;
+        String refreshToken=null;
+        
+        if (refreshHeader != null && authorizationHeader.startsWith("Refresh ")) {
+            refreshToken = authorizationHeader.substring(7);
+        	System.out.print(refreshToken);
+        }
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
@@ -45,6 +52,8 @@ public class JwtFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+            System.out.print(jwt);
+            if(jwtUtil.isTokenExpired(jwt)) jwt=jwtUtil.generateToken(userDetails);
 
             if (jwtUtil.validateToken(jwt, userDetails)) {
 

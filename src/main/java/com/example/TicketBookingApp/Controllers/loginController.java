@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
+import java.security.Principal;
 import java.util.ArrayList;
 
 
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
+import org.springframework.web.servlet.ModelAndView;
 
 import com.example.TicketBookingApp.Model.MyUser;
 import com.example.TicketBookingApp.Services.MyUserDetailsService;
@@ -52,30 +53,27 @@ public class loginController {
 	@ResponseBody
 	public ResponseEntity<?> createJwtToken(String userName,String password) throws Exception
 	{
-		//return ResponseEntity.ok(userName+" "+password);
-		//if(userName==null || password==null) return (ResponseEntity<?>) ResponseEntity.noContent();
-		System.out.print(userName+" : "+password);
 		try {
-			System.out.print("Before ");
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName,password));
-			System.out.print("Inside try");
 		}
 		catch(AuthenticationException e) {
-			System.out.println("Inside catch");
 			throw new Exception("Incorrect Username and Passowrd",e);}
 
 			UserDetails userdetails= myUserDetailsService.loadUserByUsername(userName);
-			String jwt=util.generateToken(userdetails);
-			System.out.print(jwt);
-			return ResponseEntity.ok(jwt);
-		
-		
+			String accessToken=util.generateToken(userdetails);
+			String refreshToken=util.generateRefreshToken(userdetails);
+			System.out.print(accessToken);
+			System.out.print(refreshToken);
+			return ResponseEntity.ok("Access-Token :"+accessToken +" \n"+"Refresh-Token :"+refreshToken);
 	}
 	
 	@GetMapping(path="/home")
-	@ResponseBody
-	public String displayHomepage() {
-		return UUID.randomUUID().toString();
+	//@ResponseBody
+	public ModelAndView displayHomepage(Principal principal) {
+		String name="vibin";
+		ModelAndView mv=new ModelAndView("Homepage.jsp");
+		mv.addObject("name",name);
+		return mv;
 	}
 	
 	@GetMapping(path="/register")

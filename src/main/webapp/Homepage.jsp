@@ -8,7 +8,7 @@
 </head>
 <body>
 <div>
-<h5>Welcome to home page!!!</h5>
+<h5>`Welcome to home page ${name}`</h5>
     <form action="/login" method="get">
     <input type="submit" value="Log Out"/>
 </form>

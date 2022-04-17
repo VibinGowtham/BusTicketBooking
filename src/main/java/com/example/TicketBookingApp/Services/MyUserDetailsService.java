@@ -23,8 +23,6 @@ public class MyUserDetailsService implements UserDetailsService {
     	List<MyUser> user=userRepository.findByName(name);
     	Iterator<MyUser> it=user.iterator();
     	MyUser obj = it.next();
-    	System.out.println("From database name:"+obj.getName());
-    	System.out.println("From database password:"+obj.getPassword());
         return new User(obj.getName(),obj.getPassword(),new ArrayList<>());
     }
 }
